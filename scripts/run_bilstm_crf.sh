@@ -12,32 +12,26 @@ hostname
 date
 echo starting job...
 source ~/.bashrc
-conda activate lzhenv
+# conda activate lzhenv
 export PYTHONUNBUFFERED=1
 export OMP_NUM_THREADS=1
 
-root=/scratch/zhliu/repos/Word2Vec
+root=/zhliu/repos/SequenceTagging
 cd ${root}
 
 name=BiLSTM-CRF
 load=True
 print_tofile=True
-datadir=${root}/data
-window_size=2
-unk='<UNK>'
-max_vocab=100000
-filename=text8.txt
-e_dim=300
-n_negs=5
+datadir=/root/autodl-tmp/data
+vocab_size=100000
+embed_dim=300
+hidden_dim=128
 epoch=10
-batch_size=1024
-ss_t=1e-5
+batch_size=64
 cuda=True
 lr=0.001
-betas=(0.9 0.999)
-eps=1e-8
-weight_decay=1e-4
-ckpt_path=/scratch/zhliu/checkpoints/${name}/epoch_${epoch}/batch_size_${batch_size}/lr_${lr}/weight_decay_${weight_decay}
+weight_decay=5e-4
+ckpt_path=/zhliu/checkpoints/${name}/epoch_${epoch}/lr_${lr}/embed_dim_${embed_dim}/hidden_dim_${hidden_dim}
 
 mkdir -p ${ckpt_path}
 
@@ -49,17 +43,11 @@ CUDA_VISIBLE_DEVICES=0,1,2,3  python train.py \
     --print_tofile ${print_tofile} \
     --ckpt_path ${ckpt_path} \
     --datadir ${datadir} \
-    --window_size ${window_size} \
-    --unk ${unk} \
-    --max_vocab ${max_vocab} \
-    --filename ${filename} \
-    --e_dim ${e_dim} \
-    --n_negs ${n_negs} \
+    --vocab_size ${vocab_size} \
+    --embed_dim ${embed_dim} \
+    --hidden_dim ${hidden_dim} \
     --epoch ${epoch} \
     --batch_size ${batch_size} \
-    --ss_t ${ss_t} \
     --cuda ${cuda} \
     --lr ${lr} \
-    --betas ${betas[@]} \
-    --eps ${eps} \
     --weight_decay ${weight_decay} \
