@@ -79,6 +79,7 @@ if __name__ == '__main__':
     training_stats = {
         'epoch': [],
         'train_loss': [],
+        'f1 score': []
     }
 
     # flush the output
@@ -86,17 +87,17 @@ if __name__ == '__main__':
 
     ############################## 4. train the model ################################
     for epoch in range(1, args.epoch + 1):
-        dataset = TaggingDataset(train_text_seq, train_tag_seq)
-        dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True)
-        print('dataset size: {}'.format(len(dataset)))
-        print('batch num: {}'.format(len(dataloader)))
+        train_set = TaggingDataset(train_text_seq, train_tag_seq)
+        train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True)
+        test_set = TaggingDataset(dev_text_seq, dev_tag_seq)
+        test_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True)
+        print('dataset size: {}'.format(len(train_set)))
+        print('batch num: {}'.format(len(train_loader)))
         train_loss = 0
-        loss_o = 0
-        loss_n = 0
         step = 0
-        avg_err = 0
+        max_f1 = 0.
         print('Starting epoch: {}'.format(epoch))
-        for _, (seqs, tags) in enumerate(dataloader):
+        for _, (seqs, tags) in enumerate(train_loader):
             step += 1
             if epoch == 1 and step <= 1:
                 print('seqs: {}, shape: {}'.format(seqs, seqs.shape))
@@ -110,21 +111,37 @@ if __name__ == '__main__':
             loss.backward()
             optim.step()
 
-            # print the training stats
+            # test on the dev set every 1000 steps
             if step % 1000 == 0:
-                in_embed = model.get_embeddings('in')
+                mean_f1 = 0.
+                for _, (test_seqs, test_tags) in enumerate(test_loader):
+                    if args.cuda == 'True':
+                        test_seqs, test_tags = test_seqs.cuda(), test_tags.cuda()
+                    features = model.get_features(test_seqs)
+                    path_score, best_path = model.decode(features)
+                    ans = [tag != tag2idx['<TAB>'] for tag in test_tags]
+                    pred = best_path[: len(ans)]
+
+                    # calculate the f1 score
+                    f1 = calc_f1_score(ans.cpu().numpy(), pred.cpu().numpy())
+                    mean_f1 += f1
+                mean_f1 /= len(test_loader)
+                print('Finished step: {}, mean f1: {}'.format(step, mean_f1))
+                sys.stdout.flush()
+
+                # save the best model
+                if mean_f1 > max_f1:
+                    max_f1 = mean_f1
+                    torch.save(model.state_dict(), modelpath)
+                    print("Best model saved")
 
         train_loss /= step
-        loss_o /= step
-        loss_n /= step
-        print('Finished Epoch: {}, train_loss: {}, loss_o: {}, loss_n: {}, avg error: {}'.format(epoch, train_loss, loss_o, loss_n, avg_err))
+        print('Finished Epoch: {}, train_loss: {}, f1 score: {}'.format(epoch, train_loss, max_f1))
 
         # update training stats
         training_stats['epoch'].append(epoch)
         training_stats['train_loss'].append(train_loss)
-        training_stats['loss_o'].append(loss_o)
-        training_stats['loss_n'].append(loss_n)
-        training_stats['avg_err'] = avg_err
+        training_stats['f1_score'].append(max_f1)
 
         # flush the output
         sys.stdout.flush()
