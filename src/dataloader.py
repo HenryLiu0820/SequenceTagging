@@ -6,6 +6,7 @@ import pandas as pd
 import os
 import pickle
 import collections
+import torch
 from torch.utils.data import Dataset, DataLoader
 
 def load_data(datadir):
@@ -128,8 +129,9 @@ def preprocess(train_text, train_tag, dev_text, dev_tag, test_text, args):
 
 class TaggingDataset(Dataset):
     def __init__(self, text_seq, tag_seq):
-        self.text_seq = text_seq
-        self.tag_seq = tag_seq
+        super().__init__()
+        self.text_seq = torch.tensor(text_seq, dtype=torch.int32)
+        self.tag_seq = torch.tensor(tag_seq, dtype=torch.int32)
 
     def __len__(self):
         return len(self.text_seq)

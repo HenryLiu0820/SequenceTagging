@@ -12,7 +12,7 @@ from torch import LongTensor as LT
 from torch import FloatTensor as FT
 from torch.utils.data import DataLoader
 from dataloader import *
-from model import *
+from models import *
 
 if __name__ == '__main__':
 
@@ -56,18 +56,13 @@ if __name__ == '__main__':
     dev_tag_seq = pickle.load(open(os.path.join(save_path, 'dev_tag_seq.dat'), 'rb'))
     test_text_seq = pickle.load(open(os.path.join(save_path, 'test_text_seq.dat'), 'rb'))
     seq_len = len(train_text_seq[0])
+    tagset_size = len(tag2idx)
     print('loading finished, vocabulary size: {}, sequence length: {}'.format(args.vocab_size, seq_len))
 
 
     ############################## 3. build the model ################################
-    start_tag = '<START>'
-    stop_tag = '<STOP>'
-    # add two tags to the tag2idx dictionary
-    tag2idx[start_tag] = len(tag2idx)
-    tag2idx[stop_tag] = len(tag2idx)
-
     modelpath = os.path.join(args.ckpt_path, '{}.pt'.format(args.name))
-    model = BiLSTM_CRF(args.vocab_size, args.embed_dim, args.hidden_dim, tag2idx, start_tag, stop_tag)
+    model = BiRnnCrf(args.vocab_size, tagset_size, args.embed_dim, args.hidden_dim)
     model.train()
     # model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
     if args.cuda == 'True':
@@ -106,7 +101,7 @@ if __name__ == '__main__':
             model.zero_grad()
             if args.cuda == 'True':
                 seqs, tags = seqs.cuda(), tags.cuda()
-            loss = model.neg_log_likelihood(seqs, tags)
+            loss = model.loss(seqs, tags)
             train_loss += loss.item()
             loss.backward()
             optim.step()
@@ -117,13 +112,12 @@ if __name__ == '__main__':
                 for _, (test_seqs, test_tags) in enumerate(test_loader):
                     if args.cuda == 'True':
                         test_seqs, test_tags = test_seqs.cuda(), test_tags.cuda()
-                    features = model.get_features(test_seqs)
-                    path_score, best_path = model.decode(features)
-                    ans = [tag != tag2idx['<TAB>'] for tag in test_tags]
-                    pred = best_path[: len(ans)]
+                    path_score, best_path = model(test_seqs)
+                    # ans = [tag != tag2idx['<PAD>'] for tag in test_tags]
+                    # pred = best_path[: len(ans)]
 
                     # calculate the f1 score
-                    f1 = calc_f1_score(ans.cpu().numpy(), pred.cpu().numpy())
+                    f1 = calc_f1_score(best_path.cpu().numpy(), test_tags.cpu().numpy(), tag2idx)
                     mean_f1 += f1
                 mean_f1 /= len(test_loader)
                 print('Finished step: {}, mean f1: {}'.format(step, mean_f1))

@@ -28,7 +28,7 @@ def save_args_to_file(args, output_file_path):
     with open(output_file_path, "w") as output_file:
         json.dump(vars(args), output_file, indent=4)
 
-def calc_f1_score(pred, ans):
+def calc_f1_score(pred, ans, tag2idx):
     """
     Calculates the F1 score of the predicted sequence and answer sequence.
 
@@ -42,16 +42,15 @@ def calc_f1_score(pred, ans):
     # Calculate the true positives, false positives, and false negatives
     tp = fp = fn = 0
     # flatten the input to process batch dimension
-    pred_flat = pred.flatten()
-    ans_flat = ans.flatten()
-
-    for i in range(len(pred_flat)):
-        if pred_flat[i] == ans_flat[i] and pred_flat[i] != '<TAB>':
-            tp += 1
-        elif pred_flat[i] != ans_flat[i] and pred_flat[i] != '<TAB>':
-            fp += 1
-        elif pred_flat[i] != ans_flat[i] and ans_flat[i] != '<TAB>':
-            fn += 1
+    for i in range(pred.shape[0]):
+        for j in range(pred.shape[1]):
+            if ans[i][j] != tag2idx['<PAD>']:
+                if pred[i][j] == ans[i][j] and pred[i][j] != tag2idx['O']:
+                    tp += 1
+                elif pred[i][j] != ans[i][j] and pred[i][j] != tag2idx['O']:
+                    fp += 1
+                elif pred[i][j] != ans[i][j] and ans[i][j] != tag2idx['O']:
+                    fn += 1
 
     # Calculate the precision, recall, and F1 score
     precision = tp / (tp + fp) if tp + fp > 0 else 0
