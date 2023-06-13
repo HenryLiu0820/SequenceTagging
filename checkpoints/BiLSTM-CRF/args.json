@@ -1,0 +1,24 @@
+{
+    "name": "BiLSTM-CRF",
+    "load": "False",
+    "print_tofile": "True",
+    "ckpt_path": "/Users/henryliu/Documents/GitHub/SequenceTagging/checkpoints/BiLSTM-CRF",
+    "datadir": "/Users/henryliu/Documents/GitHub/data/project3",
+    "wandb_on": "False",
+    "seq_len": 8,
+    "vocab_size": 100000,
+    "embed_dim": 300,
+    "hidden_dim": 300,
+    "n_negs": 20,
+    "epoch": 100,
+    "batch_size": 4096,
+    "ss_t": 1e-05,
+    "cuda": "False",
+    "lr": 0.1,
+    "weight_decay": 0.0005,
+    "betas": [
+        0.9,
+        0.999
+    ],
+    "eps": 1e-08
+}

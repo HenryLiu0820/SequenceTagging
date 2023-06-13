@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/henryliu/Documents/GitHub/SequenceTagging/src/train.py", line 45, in <module>
+    word2idx, tag2idx, train_text_seq, train_tag_seq, dev_text_seq, dev_tag_seq, test_text_seq = preprocess(train_text, train_tag, dev_text, dev_tag, test_text, args)
+KeyboardInterrupt

@@ -1,0 +1,7 @@
+Namespace(name='BiLSTM-CRF', load='False', print_tofile='True', ckpt_path='/Users/henryliu/Documents/GitHub/SequenceTagging/checkpoints/BiLSTM-CRF', datadir='/Users/henryliu/Documents/GitHub/data/project3', wandb_on='False', seq_len=8, vocab_size=100000, embed_dim=300, hidden_dim=300, n_negs=20, epoch=100, batch_size=4096, ss_t=1e-05, cuda='False', lr=0.1, weight_decay=0.0005, betas=[0.9, 0.999], eps=1e-08)
+preprocessing the data...
+Finished extracting words. Total words: 18974903
+Sequence length of train text: 1511
+tag2idx {'<UNK>': 0, 'O': 1, '': 2, 'I_ORG': 3, 'I_LOC': 4, 'B_T': 5, 'B_PER': 6, 'I_PER': 7, 'B_ORG': 8, 'I_T': 9, 'B_LOC': 10, '<PAD>': 11}
+word2idx len: 6148
+Finished saving processed data
