@@ -117,7 +117,8 @@ if __name__ == '__main__':
                     # pred = best_path[: len(ans)]
 
                     # calculate the f1 score
-                    f1 = calc_f1_score(best_path.cpu().numpy(), test_tags.cpu().numpy(), tag2idx)
+                    assert torch.tensor(best_path).shape == test_tags.cpu().shape
+                    f1 = calc_f1_score(torch.tensor(best_path), test_tags.cpu(), tag2idx)
                     mean_f1 += f1
                 mean_f1 /= len(test_loader)
                 print('Finished step: {}, mean f1: {}'.format(step, mean_f1))

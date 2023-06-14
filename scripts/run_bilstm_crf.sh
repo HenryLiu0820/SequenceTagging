@@ -12,17 +12,17 @@ hostname
 date
 echo starting job...
 source ~/.bashrc
-# conda activate lzhenv
+conda activate lzhenv
 export PYTHONUNBUFFERED=1
 export OMP_NUM_THREADS=1
 
-root=/zhliu/repos/SequenceTagging
+root=/scratch/zhliu/repos/SequenceTagging
 cd ${root}
 
 name=BiLSTM-CRF
 load=True
 print_tofile=True
-datadir=/root/autodl-tmp/data
+datadir=/scratch/zhliu/data/seqtag
 vocab_size=100000
 embed_dim=300
 hidden_dim=128
@@ -31,13 +31,13 @@ batch_size=64
 cuda=True
 lr=0.001
 weight_decay=5e-4
-ckpt_path=/zhliu/checkpoints/${name}/epoch_${epoch}/lr_${lr}/embed_dim_${embed_dim}/hidden_dim_${hidden_dim}
+ckpt_path=/scratch/zhliu/repos/SequenceTagging/checkpoints/${name}/epoch_${epoch}/lr_${lr}/embed_dim_${embed_dim}/hidden_dim_${hidden_dim}
 
 mkdir -p ${ckpt_path}
 
 cd src
 pwd
-CUDA_VISIBLE_DEVICES=0,1,2,3  python train.py \
+CUDA_VISIBLE_DEVICES=0,1  python train.py \
     --name ${name} \
     --load ${load} \
     --print_tofile ${print_tofile} \
