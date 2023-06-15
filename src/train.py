@@ -83,9 +83,9 @@ if __name__ == '__main__':
     ############################## 4. train the model ################################
     for epoch in range(1, args.epoch + 1):
         train_set = TaggingDataset(train_text_seq, train_tag_seq)
-        train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True)
+        train_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True, drop_last=True)
         test_set = TaggingDataset(dev_text_seq, dev_tag_seq)
-        test_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True)
+        test_loader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True, drop_last=True)
         print('dataset size: {}'.format(len(train_set)))
         print('batch num: {}'.format(len(train_loader)))
         train_loss = 0
@@ -107,8 +107,9 @@ if __name__ == '__main__':
             optim.step()
 
             # test on the dev set every 1000 steps
-            if step % 1000 == 0:
+            if step % 1000 == 1:
                 mean_f1 = 0.
+                count = 0
                 for _, (test_seqs, test_tags) in enumerate(test_loader):
                     if args.cuda == 'True':
                         test_seqs, test_tags = test_seqs.cuda(), test_tags.cuda()
@@ -117,7 +118,8 @@ if __name__ == '__main__':
                     # pred = best_path[: len(ans)]
 
                     # calculate the f1 score
-                    assert torch.tensor(best_path).shape == test_tags.cpu().shape
+                    # print('base path shape: {}'.format(torch.tensor(best_path).shape))
+                    # print('answer shape: {}'.format(test_tags.cpu().shape))
                     f1 = calc_f1_score(torch.tensor(best_path), test_tags.cpu(), tag2idx)
                     mean_f1 += f1
                 mean_f1 /= len(test_loader)

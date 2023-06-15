@@ -54,6 +54,9 @@ def fix_seq_len(text, seq_len, pad_token, dict, is_text=True):
 
         line = line.split(' ')
         line_len = len(line)
+        if line_len > seq_len:
+            line = line[: seq_len]
+            line_len = seq_len
         assert line_len <= seq_len
         line = line + [pad_token] * (seq_len - line_len)
         result.append([dict.get(word, 0) for word in line])
@@ -92,10 +95,8 @@ def preprocess(train_text, train_tag, dev_text, dev_tag, test_text, args):
     train_text_lines = train_text.split('\n')
     train_tag_lines = train_tag.split('\n')
 
-    # set seq len to the longest sequence length in the dataset
-    seq_len = max([len(s.split()) for s in train_text_lines])
-    tag_seq_len = max([len(s.split()) for s in train_tag_lines])
-    assert seq_len == tag_seq_len
+    # set sequence len 
+    seq_len = args.seq_len
 
     train_text_seq = fix_seq_len(train_text, seq_len, '<PAD>', word2idx, is_text=True)
     train_tag_seq = fix_seq_len(train_tag, seq_len, '<PAD>', tag2idx, is_text=False)

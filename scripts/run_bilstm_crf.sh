@@ -24,14 +24,15 @@ load=True
 print_tofile=True
 datadir=/scratch/zhliu/data/seqtag
 vocab_size=100000
+seq_len=400
 embed_dim=300
 hidden_dim=128
 epoch=10
-batch_size=64
+batch_size=8
 cuda=True
 lr=0.001
 weight_decay=5e-4
-ckpt_path=/scratch/zhliu/repos/SequenceTagging/checkpoints/${name}/epoch_${epoch}/lr_${lr}/embed_dim_${embed_dim}/hidden_dim_${hidden_dim}
+ckpt_path=/scratch/zhliu/checkpoints/${name}/epoch_${epoch}/lr_${lr}/embed_dim_${embed_dim}/hidden_dim_${hidden_dim}
 
 mkdir -p ${ckpt_path}
 
@@ -43,6 +44,7 @@ CUDA_VISIBLE_DEVICES=0,1  python train.py \
     --print_tofile ${print_tofile} \
     --ckpt_path ${ckpt_path} \
     --datadir ${datadir} \
+    --seq_len ${seq_len} \
     --vocab_size ${vocab_size} \
     --embed_dim ${embed_dim} \
     --hidden_dim ${hidden_dim} \

@@ -12,7 +12,7 @@ def parse_args():
     parser.add_argument('--wandb-on', type=str, default='False', help='if use wandb for logging')
 
     # preprocessing related
-    parser.add_argument('--seq-len', type=int, default=8, help='tagging sequence length')
+    parser.add_argument('--seq_len', type=int, default=8, help='tagging sequence length')
     parser.add_argument('--vocab_size', type=int, default=50000, help='max vocabulary size')
     # training related
     parser.add_argument('--embed_dim', type=int, default=300, help="embedding dimension")
@@ -24,8 +24,6 @@ def parse_args():
     parser.add_argument('--cuda', type=str, default='False', help="use CUDA")
     parser.add_argument('--lr', type=float, default=0.1, help="learning rate")
     parser.add_argument('--weight_decay', type=float, default=5e-4, help="weight decay")
-    parser.add_argument('--betas', nargs=2, type=float, default=[0.9, 0.999], help="beta parameters for Adam optimizer")
-    parser.add_argument('--eps', type=float, default=1e-8, help="epsilon parameter for Adam optimizer")
 
     args = parser.parse_args()
     return args

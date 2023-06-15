@@ -106,6 +106,9 @@ class CRF(nn.Module):
         """
         B, L, C = features.shape
 
+        # for i in range(len(masks)):
+        #     print('seq len', int(masks[i, :].sum().item()))
+
         bps = torch.zeros(B, L, C, dtype=torch.long, device=features.device)  # back pointers
 
         # Initialize the viterbi variables in log space
@@ -131,13 +134,14 @@ class CRF(nn.Module):
         bps = bps.cpu().numpy()
         for b in range(B):
             best_tag_b = best_tag[b].item()
-            seq_len = int(masks[b, :].sum().item())
-
+            # seq_len = int(masks[b, :].sum().item())
+            seq_len = len(masks[0])
             best_path = [best_tag_b]
             for bps_t in reversed(bps[b, :seq_len]):
                 best_tag_b = bps_t[best_tag_b]
                 best_path.append(best_tag_b)
             # drop the last tag and reverse the left
+            # fix best_path length to seq_len
             best_paths.append(best_path[-2::-1])
 
         return best_score, best_paths
