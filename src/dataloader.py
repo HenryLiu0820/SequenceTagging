@@ -42,7 +42,8 @@ def load_data(datadir):
 
 def fix_seq_len(text, seq_len, pad_token, dict, is_text=True):
     '''
-    This function process a list of strings, seperates the strings into tokens and pad each string to the same length
+    This function process a list of strings, 
+    seperates the strings into tokens and pad each string to the same length
     '''
     lines = text.split('\n')
     result = []

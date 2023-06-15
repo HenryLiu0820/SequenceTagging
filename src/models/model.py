@@ -3,17 +3,16 @@ from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 from .crf import CRF
 
 
-class BiRnnCrf(nn.Module):
-    def __init__(self, vocab_size, tagset_size, embedding_dim, hidden_dim, num_rnn_layers=1, rnn="lstm"):
-        super(BiRnnCrf, self).__init__()
+class BiLSTM_CRF(nn.Module):
+    def __init__(self, vocab_size, tagset_size, embedding_dim, hidden_dim, num_rnn_layers=1):
+        super(BiLSTM_CRF, self).__init__()
         self.embedding_dim = embedding_dim
         self.hidden_dim = hidden_dim
         self.vocab_size = vocab_size
         self.tagset_size = tagset_size
 
         self.embedding = nn.Embedding(vocab_size, embedding_dim)
-        RNN = nn.LSTM if rnn == "lstm" else nn.GRU
-        self.rnn = RNN(embedding_dim, hidden_dim // 2, num_layers=num_rnn_layers,
+        self.rnn = nn.LSTM(embedding_dim, hidden_dim // 2, num_layers=num_rnn_layers,
                        bidirectional=True, batch_first=True)
         self.crf = CRF(hidden_dim, self.tagset_size)
 
