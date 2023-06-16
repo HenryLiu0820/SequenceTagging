@@ -13,6 +13,7 @@ from torch import FloatTensor as FT
 from torch.utils.data import DataLoader
 from dataloader import *
 from models import *
+from sklearn.metrics import f1_score
 
 if __name__ == '__main__':
 

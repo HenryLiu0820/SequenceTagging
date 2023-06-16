@@ -20,7 +20,6 @@ def parse_args():
     parser.add_argument('--n_negs', type=int, default=20, help="number of negative samples")
     parser.add_argument('--epoch', type=int, default=100, help="number of epochs")
     parser.add_argument('--batch_size', type=int, default=4096, help="mini-batch size")
-    parser.add_argument('--ss_t', type=float, default=1e-5, help="subsample threshold")
     parser.add_argument('--cuda', type=str, default='False', help="use CUDA")
     parser.add_argument('--lr', type=float, default=0.1, help="learning rate")
     parser.add_argument('--weight_decay', type=float, default=5e-4, help="weight decay")
